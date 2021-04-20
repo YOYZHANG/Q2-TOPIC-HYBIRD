@@ -2,6 +2,7 @@ package com.example.hellome;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
@@ -16,9 +17,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         myWebView = (WebView) findViewById(R.id.webview);
 
-        myWebView.setWebViewClient(new offLineWebClient());
+        myWebView.setWebViewClient(new offLineWebClient(getApplicationContext()));
         myWebView.setWebChromeClient(new WebChromeClient());
-        myWebView.loadUrl("http://www.baidu.com");
+        myWebView.loadUrl("https://www.baidu.com");
 
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);

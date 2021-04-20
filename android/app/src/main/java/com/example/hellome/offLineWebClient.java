@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.FileUtils;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -15,7 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class offLineWebClient extends WebViewClient {
-    Context myContext;
+    private Context myContext;
+
+    public offLineWebClient(Context context) {
+        this.myContext = context;
+    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view,
@@ -47,6 +52,7 @@ public class offLineWebClient extends WebViewClient {
         try {
             return getUtf8EncodedCssWebResourceResponse(myContext.getAssets().open("index.html"));
         } catch (IOException e) {
+            Log.e("Error", e.toString());
             return null;
         }
     }
