@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
+        JsBridge.register("JsBridge", NativeMethods.class);
+        myWebView.addJavascriptInterface(new JsBridge(myWebView), "_jsbridge");
     }
 
     @Override
