@@ -21,8 +21,11 @@ public class CallBack {
     public void apply(JSONObject jsonObject) {
         if (webview != null) {
             webview.post(() -> {
-                webview.evaluateJavascript("javascript:" + cbName + "(" + jsonObject.toString() + ")", value -> {
-                    return;
+                webview.evaluateJavascript("javascript:" + cbName + "(" + jsonObject.toString() + ")", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        return;
+                    }
                 });
             });
         }

@@ -1,5 +1,6 @@
 package com.example.hellome;
 
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -24,6 +25,7 @@ public class JsBridge {
 
     public static void register(String exposedName, Class<?> classz) {
         if (!exposedMethods.containsKey(exposedName)) {
+            Log.e("nativeMethods", classz.toString());
             exposedMethods.put(exposedName, getAllMethods(classz));
         }
     }
@@ -31,8 +33,9 @@ public class JsBridge {
     private static HashMap<String, Method> getAllMethods(Class injectedCls) {
         HashMap<String, Method> methodHashMap = new HashMap<>();
         Method[] methods = injectedCls.getDeclaredMethods();
+        Log.e("declared methods", methods.toString());
         for (Method method: methods) {
-            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || method.getName() != null) {
+            if (method.getModifiers() != (Modifier.PUBLIC | Modifier.STATIC) || method.getName() == null) {
                 continue;
             }
             Class[] parameters = method.getParameterTypes();
@@ -57,7 +60,7 @@ public class JsBridge {
                 HashMap<String, Method> methodHashMap = exposedMethods.get("JsBridge");
                 if (methodHashMap != null && methodHashMap.size() != 0 && methodHashMap.containsKey(methodName)){
                     Method method = methodHashMap.get(methodName);
-                    method.invoke(null, myWebview, arg, new CallBack(args, myWebview));
+                    method.invoke(null, myWebview, arg, new CallBack(cbName, myWebview));
                 }
             }
         } catch (Exception e) {

@@ -1,9 +1,7 @@
 package com.example.hellome;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.FileUtils;
 import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -13,52 +11,46 @@ import android.webkit.WebViewClient;
 import androidx.annotation.RequiresApi;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class offLineWebClient extends WebViewClient {
     private Context myContext;
+    private static final String INJECTION_TOKEN = "injection";
 
     public offLineWebClient(Context context) {
         this.myContext = context;
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public WebResourceResponse shouldInterceptRequest(WebView view,
-                                                      WebResourceRequest request) {
+    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+        WebResourceResponse response = super.shouldInterceptRequest(view, request);
         final String url = request.getUrl().toString();
-        WebResourceResponse resourceResponse = getWebResourceResponse(url);
-
-        if (resourceResponse == null) {
-            return super.shouldInterceptRequest(view, request);
+        if (url !=null && url.contains(INJECTION_TOKEN)) {
+            int text = url.indexOf(INJECTION_TOKEN);
+            String assetPath = url.substring(url.indexOf(INJECTION_TOKEN) + INJECTION_TOKEN.length(), url.length() - 1);
+            Log.e("assetPath", assetPath);
+            try {
+                response = new WebResourceResponse(
+                        getMimeType(url),
+                        "UTF-8",
+                        myContext.getAssets().open(assetPath)
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        return resourceResponse;
+        return response;
     }
 
-    private WebResourceResponse getWebResourceResponse(String url) {
-        try {
-            WebResourceResponse resourceResponse = getCssWebResourceResponseFromAsset();
-            return resourceResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
+    private String getMimeType(String url) {
+        String mimetype = "";
+        if (url.contains(".js")) {
+            mimetype = "application/javascript";
         }
-        return null;
-    }
-
-    /**
-     * Return WebResourceResponse with CSS markup from an asset (e.g. "assets/style.css").
-     */
-    private WebResourceResponse getCssWebResourceResponseFromAsset() {
-        try {
-            return getUtf8EncodedCssWebResourceResponse(myContext.getAssets().open("index.html"));
-        } catch (IOException e) {
-            Log.e("Error", e.toString());
-            return null;
+        else if (url.contains(".html")) {
+            mimetype = "text/html";
         }
-    }
 
-
-    private WebResourceResponse getUtf8EncodedCssWebResourceResponse(InputStream data) {
-        return new WebResourceResponse("text/html", "UTF-8", data);
+        return mimetype;
     }
 }
