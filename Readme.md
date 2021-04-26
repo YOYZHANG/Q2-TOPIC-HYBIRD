@@ -3,6 +3,7 @@ Q2+ plan: 用hybird实现一个离线webview
 
 # CONTENT
 tag v1.0: 实现基本的在线网址转离线网页的功能
+tag v2.0: 实现jsBridge,打通端与前端的通信
 
 # REFERENCE
 - https://github.com/dust-yu/sample_webview_android
